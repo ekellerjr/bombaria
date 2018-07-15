@@ -19,7 +19,7 @@ public class MeshGenerator : MonoBehaviour
     List<List<int>> outlines = new List<List<int>>();
     HashSet<int> checkedVertices = new HashSet<int>();
 
-    public void GenerateMesh(int[,] map, float squareSize)
+    public void GenerateMesh(ushort[,] map, float squareSize)
     {
 
         triangleDictionary.Clear();
@@ -44,6 +44,7 @@ public class MeshGenerator : MonoBehaviour
 
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
+
         mesh.RecalculateNormals();
 
         int tileAmount = 10;
@@ -190,10 +191,12 @@ public class MeshGenerator : MonoBehaviour
             // 4 point:
             case 15:
                 MeshFromPoints(square.topLeft, square.topRight, square.bottomRight, square.bottomLeft);
+
                 checkedVertices.Add(square.topLeft.vertexIndex);
                 checkedVertices.Add(square.topRight.vertexIndex);
                 checkedVertices.Add(square.bottomRight.vertexIndex);
                 checkedVertices.Add(square.bottomLeft.vertexIndex);
+
                 break;
         }
 
@@ -205,10 +208,13 @@ public class MeshGenerator : MonoBehaviour
 
         if (points.Length >= 3)
             CreateTriangle(points[0], points[1], points[2]);
+
         if (points.Length >= 4)
             CreateTriangle(points[0], points[2], points[3]);
+
         if (points.Length >= 5)
             CreateTriangle(points[0], points[3], points[4]);
+
         if (points.Length >= 6)
             CreateTriangle(points[0], points[4], points[5]);
 
@@ -233,6 +239,7 @@ public class MeshGenerator : MonoBehaviour
         triangles.Add(c.vertexIndex);
 
         Triangle triangle = new Triangle(a.vertexIndex, b.vertexIndex, c.vertexIndex);
+
         AddTriangleToDictionary(triangle.vertexIndexA, triangle);
         AddTriangleToDictionary(triangle.vertexIndexB, triangle);
         AddTriangleToDictionary(triangle.vertexIndexC, triangle);
@@ -390,10 +397,11 @@ public class MeshGenerator : MonoBehaviour
     {
         public Square[,] squares;
 
-        public SquareGrid(int[,] map, float squareSize)
+        public SquareGrid(ushort[,] map, float squareSize)
         {
             int nodeCountX = map.GetLength(0);
             int nodeCountY = map.GetLength(1);
+
             float mapWidth = nodeCountX * squareSize;
             float mapHeight = nodeCountY * squareSize;
 
@@ -403,17 +411,26 @@ public class MeshGenerator : MonoBehaviour
             {
                 for (int y = 0; y < nodeCountY; y++)
                 {
-                    Vector3 pos = new Vector3(-mapWidth / 2 + x * squareSize + squareSize / 2, 0, -mapHeight / 2 + y * squareSize + squareSize / 2);
+                    Vector3 pos = new Vector3(
+                        -mapWidth / 2 + x * squareSize + squareSize / 2,
+                        0,
+                        -mapHeight / 2 + y * squareSize + squareSize / 2);
+
                     controlNodes[x, y] = new ControlNode(pos, map[x, y] == 1, squareSize);
                 }
             }
 
             squares = new Square[nodeCountX - 1, nodeCountY - 1];
+
             for (int x = 0; x < nodeCountX - 1; x++)
             {
                 for (int y = 0; y < nodeCountY - 1; y++)
                 {
-                    squares[x, y] = new Square(controlNodes[x, y + 1], controlNodes[x + 1, y + 1], controlNodes[x + 1, y], controlNodes[x, y]);
+                    squares[x, y] = new Square(
+                        controlNodes[x, y + 1],
+                        controlNodes[x + 1, y + 1],
+                        controlNodes[x + 1, y],
+                        controlNodes[x, y]);
                 }
             }
 
@@ -441,10 +458,13 @@ public class MeshGenerator : MonoBehaviour
 
             if (topLeft.active)
                 configuration += 8;
+
             if (topRight.active)
                 configuration += 4;
+
             if (bottomRight.active)
                 configuration += 2;
+
             if (bottomLeft.active)
                 configuration += 1;
         }
