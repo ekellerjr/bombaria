@@ -6,36 +6,23 @@ public class CameraFollow : MonoBehaviour {
 
     public Transform target;
     public float smoothing = 5f;
-
-    Transform transform;
-
-    Vector3 offset;
-
-    private void Awake()
-    {
-        transform = GetComponent<Transform>();
-
-        if (target == null)
-        {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-
-            if (player != null)
-                target = player.transform;
-        }
-
-        if(target == null)
-            this.enabled = false;
-    }
-
-    private void Start()
-    {
-        offset = transform.position - target.position;
-    }
+    
+    public Vector3 offset;
 
     private void FixedUpdate()
     {
+        if (target == null)
+            return;
+
         Vector3 targetCamPos = target.position + offset;
         transform.position = Vector3.Lerp(transform.position, targetCamPos, smoothing * Time.deltaTime);
+        
+        transform.LookAt(target);
+    }
+
+    public void Follow(Transform target)
+    {
+        this.target = target;
     }
 
 }

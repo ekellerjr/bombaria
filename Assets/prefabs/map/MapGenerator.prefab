@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 114644116906130092}
   - component: {fileID: 114252467629715624}
   - component: {fileID: 114212353732505588}
+  - component: {fileID: 64554611655291570}
   m_Layer: 0
   m_Name: MapGenerator
   m_TagString: Untagged
@@ -188,6 +189,20 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1283239432131478}
   m_Mesh: {fileID: 0}
+--- !u!64 &64554611655291570
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1169539144351712}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 0
+  m_CookingOptions: 14
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 0}
 --- !u!114 &114212353732505588
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -199,6 +214,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ad25e3460010e04db864f3d93d2ab60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 1654403112504196, guid: 930364fc4a98e57418f3b76fba878305,
+    type: 2}
+  stonePrefab: {fileID: 1109359897438982, guid: e56cc9d81cb0eb24093657e48db7aefd,
+    type: 2}
 --- !u!114 &114252467629715624
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -226,7 +245,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 200
   height: 100
-  seed: 
-  useRandomSeed: 0
-  randomFillPercent: 46
+  seed: 0
+  useRandomSeed: 1
+  randomFillPercent: 48
+  wallThresholdSize: 50
+  roomThresholdSize: 50
+  roomPassageSize: 5
   squareSize: 1

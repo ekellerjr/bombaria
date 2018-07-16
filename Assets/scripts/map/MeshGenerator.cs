@@ -4,32 +4,47 @@ using System.Collections.Generic;
 
 public class MeshGenerator : MonoBehaviour
 {
-
-    public SquareGrid squareGrid;
-
     public MeshFilter walls;
     public MeshFilter cave;
 
     public bool is2D;
 
-    List<Vector3> vertices;
-    List<int> triangles;
+    private List<Vector3> vertices;
+    private List<int> triangles;
 
-    Dictionary<int, List<Triangle>> triangleDictionary = new Dictionary<int, List<Triangle>>();
-    List<List<int>> outlines = new List<List<int>>();
-    HashSet<int> checkedVertices = new HashSet<int>();
+    private Dictionary<int, List<Triangle>> triangleDictionary;
+    private List<List<int>> outlines;
+    private HashSet<int> checkedVertices;
 
-    public void GenerateMesh(ushort[,] map, float squareSize)
+    private SquareGrid squareGrid;
+
+    private bool generating;
+    
+    private void Init(ushort[,] map, float squareSize)
     {
+        vertices = new List<Vector3>();
 
-        triangleDictionary.Clear();
-        outlines.Clear();
-        checkedVertices.Clear();
+        triangles = new List<int>();
+
+        triangleDictionary = new Dictionary<int, List<Triangle>>();
+
+        outlines = new List<List<int>>();
+
+        checkedVertices = new HashSet<int>();
 
         squareGrid = new SquareGrid(map, squareSize);
 
-        vertices = new List<Vector3>();
-        triangles = new List<int>();
+    }
+
+    internal SquareGrid GetSquareGrid()
+    {
+        return this.squareGrid;
+    }
+    public void GenerateMesh(ushort[,] map, float squareSize)
+    {
+        this.generating = true;
+
+        Init(map, squareSize);
 
         for (int x = 0; x < squareGrid.squares.GetLength(0); x++)
         {
@@ -66,6 +81,9 @@ public class MeshGenerator : MonoBehaviour
         {
             CreateWallMesh();
         }
+
+        this.generating = false;
+
     }
 
     void CreateWallMesh()
@@ -393,19 +411,25 @@ public class MeshGenerator : MonoBehaviour
         }
     }
 
-    public class SquareGrid
+    internal class SquareGrid
     {
+        public float squareSize;
+
         public Square[,] squares;
 
+        public ControlNode[,] controlNodes;
+        
         public SquareGrid(ushort[,] map, float squareSize)
         {
+            this.squareSize = squareSize;
+
             int nodeCountX = map.GetLength(0);
             int nodeCountY = map.GetLength(1);
 
             float mapWidth = nodeCountX * squareSize;
             float mapHeight = nodeCountY * squareSize;
 
-            ControlNode[,] controlNodes = new ControlNode[nodeCountX, nodeCountY];
+            controlNodes = new ControlNode[nodeCountX, nodeCountY];
 
             for (int x = 0; x < nodeCountX; x++)
             {
@@ -416,7 +440,7 @@ public class MeshGenerator : MonoBehaviour
                         0,
                         -mapHeight / 2 + y * squareSize + squareSize / 2);
 
-                    controlNodes[x, y] = new ControlNode(pos, map[x, y] == 1, squareSize);
+                    controlNodes[x, y] = new ControlNode(pos, new MapGenerator.Coord(x, y), map[x, y] == 1, squareSize);
                 }
             }
 
@@ -433,13 +457,29 @@ public class MeshGenerator : MonoBehaviour
                         controlNodes[x, y]);
                 }
             }
+        }
 
+        public Vector3 GetPosition(MapGenerator.Coord mapCoords)
+        {
+            if (CommonUtils.IsInRange(
+                mapCoords.tileX,
+                mapCoords.tileY,
+                controlNodes.GetLength(0),
+                controlNodes.GetLength(1)) &&
+                controlNodes[mapCoords.tileX, mapCoords.tileY] != null)
+            {
+                return controlNodes[mapCoords.tileX, mapCoords.tileY].position;
+            }
+            else
+            {
+                return Vector3.negativeInfinity;
+
+            }
         }
     }
 
-    public class Square
+    internal class Square
     {
-
         public ControlNode topLeft, topRight, bottomRight, bottomLeft;
         public Node centreTop, centreRight, centreBottom, centreLeft;
         public int configuration;
@@ -471,9 +511,10 @@ public class MeshGenerator : MonoBehaviour
 
     }
 
-    public class Node
+    internal class Node
     {
         public Vector3 position;
+
         public int vertexIndex = -1;
 
         public Node(Vector3 _pos)
@@ -482,18 +523,20 @@ public class MeshGenerator : MonoBehaviour
         }
     }
 
-    public class ControlNode : Node
+    internal class ControlNode : Node
     {
+        public MapGenerator.Coord mapCoords;
 
         public bool active;
         public Node above, right;
 
-        public ControlNode(Vector3 _pos, bool _active, float squareSize) : base(_pos)
+        public ControlNode(Vector3 _pos, MapGenerator.Coord _mapCoords, bool _active, float squareSize) : base(_pos)
         {
+            mapCoords = _mapCoords;
             active = _active;
+
             above = new Node(position + Vector3.forward * squareSize / 2f);
             right = new Node(position + Vector3.right * squareSize / 2f);
         }
-
     }
 }

@@ -26,11 +26,14 @@ public class Blinking : MonoBehaviour {
 
     private bool blinking;
 
+    private double blinkPeriod;
+
     // Use this for initialization
     private void Init () {
 
         rndr = GetComponent<Renderer>();
         originalMaterial = rndr.materials[0];
+        blinkPeriod = 0;
 
         timer = 0;
         curBlinkTime = 0;
@@ -53,18 +56,22 @@ public class Blinking : MonoBehaviour {
 
         // Debug.Log("timer: " + timer);
        // Debug.Log("curBlinkTime: " + curBlinkTime);
+       
+        
 
-        double blinkPeriod = 0;
-
-        if (timer <= duration025)
+        if (timer < duration025)
+        {
+            blinkPeriod = duration;
+        }
+        else if (timer >= duration025 && timer < duration05)
         {
             blinkPeriod = durationDiv4;
         }
-        else if (timer <= duration05)
+        else if (timer >= duration05 && timer < duration075)
         {
             blinkPeriod = durationDiv8;
         }
-        else if (timer <= duration075 )
+        else if (timer >= duration075 && timer < duration)
         {
             blinkPeriod = durationDiv16;
         }
@@ -113,14 +120,14 @@ public class Blinking : MonoBehaviour {
         this.duration = duration;
 
         this.duration025 = duration * 0.25;
-        this.duration05 = duration * 0.5;
+        this.duration05 = duration * 0.50;
         this.duration075 = duration * 0.75;
 
 
-        this.durationDiv4 = duration / 4;
-        this.durationDiv8 = duration / 8;
-        this.durationDiv16 = duration / 16;
-
+        this.durationDiv4 = duration / 16;
+        this.durationDiv8 = duration / 32;
+        this.durationDiv16 = duration / 128;
+        
         this.blinking = true;
     }
 
