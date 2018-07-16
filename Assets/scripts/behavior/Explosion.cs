@@ -3,27 +3,41 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Explosion : MonoBehaviour {
+public class Explosion : MonoBehaviour
+{
 
-    public float range = 5;
-    public float speed = 5;
 
-    public float rangeDampingFactor = 2;
-    public float speedDampingFactor = 2;
+    [Header("Transform Scaling")]
+    public bool scaleTransform = false;
+    public float maxScaleX = 5;
+    public float maxScaleY = 5;
+    public float maxScaleZ = 5;
+    public float transformScalingXSpeed = 5;
+    public float transformScalingYSpeed = 5;
+    public float transformScalingZSpeed = 5;
+
+    [Header("Sphere Colliding")]
+    public float maxSphereRadius = 3;
+    public float sphereGrowingSpeed = 3;
+
+    [Header("Light Handling")]
+    public Light explosionLight;
+    public float maxLightIntensity = 5;
+    public float lightIntensityIncreasingSpeed = 10;
+    public float maxLightRange = 5;
+    public float lightRangeIncreasingSpeed = 5;
 
     private Vector3 targetScale;
     private bool exploding;
-    
-    private float curRange;
+
+    private float curSphereRadius;
     private float dampingRange;
 
     private void Init()
     {
-        targetScale = new Vector3(range, range, range);
-        curRange = 0;
-        dampingRange = range / rangeDampingFactor;
+        targetScale = new Vector3(maxScaleX, maxScaleY, maxScaleZ);
+        curSphereRadius = 0;
         exploding = false;
-        
     }
 
     private void Update()
@@ -31,16 +45,41 @@ public class Explosion : MonoBehaviour {
         if (!exploding)
             return;
 
-        // transform.localScale = Vector3.LerpUnclamped(transform.localScale, targetScale, speed * Time.deltaTime);
-        float curSpeed = speed * Time.deltaTime;
-        float dampingSpeed = curSpeed / speedDampingFactor;
+        bool finish = true;
 
-        transform.localScale = new Vector3(
-            transform.localScale.x + curSpeed,
-            transform.localScale.y + curSpeed,
-            transform.localScale.z + curSpeed);
+        finish &= DoScaling();
 
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, (curRange >= dampingRange) ? dampingRange : curRange += dampingSpeed);
+        finish &= DoSphereCasting();
+
+        finish &= DoLighting();
+
+        if (finish)
+        {
+            exploding = false;
+            Destroy(this.gameObject);
+        }
+
+    }
+
+    private bool DoLighting()
+    {
+
+        if (explosionLight == null)
+            return true;
+
+        explosionLight.range = explosionLight.range >= maxLightRange ? maxLightRange : explosionLight.range + lightRangeIncreasingSpeed * Time.deltaTime;
+        explosionLight.intensity = explosionLight.intensity >= maxLightIntensity ? maxLightIntensity :
+            explosionLight.intensity + lightIntensityIncreasingSpeed * Time.deltaTime;
+
+        return explosionLight.range >= maxLightRange && explosionLight.intensity >= maxLightIntensity;
+    }
+
+    private bool DoSphereCasting()
+    {
+
+        Collider[] hitColliders = Physics.OverlapSphere(
+            transform.position,
+            (curSphereRadius >= maxSphereRadius) ? maxSphereRadius : curSphereRadius += sphereGrowingSpeed * Time.deltaTime);
 
         foreach (Collider c in hitColliders)
         {
@@ -50,12 +89,22 @@ public class Explosion : MonoBehaviour {
             }
         }
 
-        if (   transform.localScale.x >= targetScale.x 
+        return curSphereRadius >= maxSphereRadius;
+    }
+
+    private bool DoScaling()
+    {
+        if (!scaleTransform)
+            return true;
+        
+        transform.localScale = new Vector3(
+            transform.localScale.x >= maxScaleX ? maxScaleX : transform.localScale.x + transformScalingXSpeed * Time.deltaTime,
+            transform.localScale.y >= maxScaleY ? maxScaleY : transform.localScale.y + transformScalingYSpeed * Time.deltaTime,
+            transform.localScale.z >= maxScaleZ ? maxScaleZ : transform.localScale.z + transformScalingZSpeed * Time.deltaTime);
+
+        return transform.localScale.x >= targetScale.x
             && transform.localScale.y >= targetScale.y
-            && transform.localScale.z >= targetScale.z)
-        {
-            Destroy(this.gameObject);
-        }
+            && transform.localScale.z >= targetScale.z;
     }
 
     /*
