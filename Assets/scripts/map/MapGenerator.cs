@@ -14,10 +14,7 @@ public class MapGenerator : MonoBehaviour
     public int wallThresholdSize = 50;
     public int roomThresholdSize = 50;
     public int roomPassageSize = 5;
-
-    [Header("Mesh Attributes")]
-    public float squareSize = 1;
-
+    
     private ushort[,] map;
 
     private HashSet<Passage> passages;
@@ -89,7 +86,7 @@ public class MapGenerator : MonoBehaviour
         }
 
         MeshGenerator meshGen = GetComponent<MeshGenerator>();
-        meshGen.GenerateMesh(borderedMap, squareSize);
+        meshGen.GenerateMesh(borderedMap);
 
         EnvironmentGenerator envGen = GetComponent<EnvironmentGenerator>();
         envGen.SetSeed(seed);

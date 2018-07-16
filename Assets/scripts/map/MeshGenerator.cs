@@ -1,14 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class MeshGenerator : MonoBehaviour
 {
+    [Header("Mesh Objects")]
     public MeshFilter walls;
     public MeshFilter cave;
+    public MeshFilter floor;
 
+    [Header("Mesh Parameters")]
+    public float squareSize = 1;
+    public float wallHeight = 5;
     public bool is2D;
-
+    
     private List<Vector3> vertices;
     private List<int> triangles;
 
@@ -40,7 +46,7 @@ public class MeshGenerator : MonoBehaviour
     {
         return this.squareGrid;
     }
-    public void GenerateMesh(ushort[,] map, float squareSize)
+    public void GenerateMesh(ushort[,] map)
     {
         this.generating = true;
 
@@ -55,12 +61,13 @@ public class MeshGenerator : MonoBehaviour
         }
 
         Mesh mesh = new Mesh();
-        cave.mesh = mesh;
-
+        
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
 
         mesh.RecalculateNormals();
+
+        cave.mesh = mesh;
 
         int tileAmount = 10;
         Vector2[] uvs = new Vector2[vertices.Count];
@@ -80,25 +87,70 @@ public class MeshGenerator : MonoBehaviour
         else
         {
             CreateWallMesh();
+            CreateFloorMesh();
         }
 
         this.generating = false;
 
     }
 
+    private void CreateFloorMesh()
+    {
+        MeshCollider floorCollider = floor.GetComponent<MeshCollider>();
+        Destroy(floorCollider);
+
+        List<Vector3> floorVertices = new List<Vector3>();
+        List<int> floorTriangles = new List<int>();
+        
+        int width = squareGrid.controlNodes.GetLength(0);
+        int heigth = squareGrid.controlNodes.GetLength(1);
+
+        Vector3 left = squareGrid.controlNodes[0, heigth - 1].position;
+        Vector3 bottomLeft = squareGrid.controlNodes[0, 0].position;
+        Vector3 bottomRight = squareGrid.controlNodes[width - 1, 0].position;
+        Vector3 right = squareGrid.controlNodes[width - 1, heigth - 1].position;
+        
+        floorVertices.Add(left);
+        floorVertices.Add(bottomLeft);
+        floorVertices.Add(bottomRight);
+        floorVertices.Add(right);
+
+        floorTriangles.Add(0);
+        floorTriangles.Add(3);
+        floorTriangles.Add(2);
+
+        floorTriangles.Add(2);
+        floorTriangles.Add(1);
+        floorTriangles.Add(0);
+
+        Mesh floorMesh = new Mesh();
+
+        floorMesh.vertices = floorVertices.ToArray();
+        floorMesh.triangles = floorTriangles.ToArray();
+
+        floorMesh.RecalculateNormals();
+
+        floor.mesh = floorMesh;
+
+        floorCollider = floor.gameObject.AddComponent<MeshCollider>();
+        floorCollider.sharedMesh = floorMesh;
+
+        floor.gameObject.transform.position = new Vector3(
+            floor.gameObject.transform.position.x,
+            floor.gameObject.transform.position.y - wallHeight,
+            floor.gameObject.transform.position.z);
+    }
+
     void CreateWallMesh()
     {
-
-        MeshCollider currentCollider = GetComponent<MeshCollider>();
-        Destroy(currentCollider);
+        MeshCollider wallCollider = walls.GetComponent<MeshCollider>();
+        Destroy(wallCollider);
 
         CalculateMeshOutlines();
 
         List<Vector3> wallVertices = new List<Vector3>();
         List<int> wallTriangles = new List<int>();
-        Mesh wallMesh = new Mesh();
-        float wallHeight = 5;
-
+        
         foreach (List<int> outline in outlines)
         {
             for (int i = 0; i < outline.Count - 1; i++)
@@ -109,20 +161,26 @@ public class MeshGenerator : MonoBehaviour
                 wallVertices.Add(vertices[outline[i]] - Vector3.up * wallHeight); // bottom left
                 wallVertices.Add(vertices[outline[i + 1]] - Vector3.up * wallHeight); // bottom right
 
-                wallTriangles.Add(startIndex + 0);
-                wallTriangles.Add(startIndex + 2);
-                wallTriangles.Add(startIndex + 3);
+                wallTriangles.Add(startIndex + 0); // left
+                wallTriangles.Add(startIndex + 2); // bottom left
+                wallTriangles.Add(startIndex + 3); // bottom right
 
-                wallTriangles.Add(startIndex + 3);
-                wallTriangles.Add(startIndex + 1);
-                wallTriangles.Add(startIndex + 0);
+                wallTriangles.Add(startIndex + 3); // bottom right
+                wallTriangles.Add(startIndex + 1); // right
+                wallTriangles.Add(startIndex + 0); // left
             }
         }
+
+        Mesh wallMesh = new Mesh();
+
         wallMesh.vertices = wallVertices.ToArray();
         wallMesh.triangles = wallTriangles.ToArray();
+
+        wallMesh.RecalculateNormals();
+
         walls.mesh = wallMesh;
 
-        MeshCollider wallCollider = gameObject.AddComponent<MeshCollider>();
+        wallCollider = walls.gameObject.AddComponent<MeshCollider>();
         wallCollider.sharedMesh = wallMesh;
     }
 
