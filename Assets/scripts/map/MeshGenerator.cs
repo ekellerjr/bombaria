@@ -39,13 +39,13 @@ public class MeshGenerator : MonoBehaviour
         checkedVertices = new HashSet<int>();
 
         squareGrid = new SquareGrid(map, squareSize);
-
     }
-
+    
     internal SquareGrid GetSquareGrid()
     {
         return this.squareGrid;
     }
+
     public void GenerateMesh(ushort[,] map)
     {
         this.generating = true;
@@ -136,9 +136,9 @@ public class MeshGenerator : MonoBehaviour
         floorCollider.sharedMesh = floorMesh;
 
         floor.gameObject.transform.position = new Vector3(
-            floor.gameObject.transform.position.x,
-            floor.gameObject.transform.position.y - wallHeight,
-            floor.gameObject.transform.position.z);
+            transform.position.x,
+            transform.position.y - wallHeight,
+            transform.position.z);
     }
 
     void CreateWallMesh()
@@ -182,6 +182,11 @@ public class MeshGenerator : MonoBehaviour
 
         wallCollider = walls.gameObject.AddComponent<MeshCollider>();
         wallCollider.sharedMesh = wallMesh;
+
+        transform.position = new Vector3(
+           transform.position.x,
+           wallHeight,
+           transform.position.z);
     }
 
     void Generate2DColliders()

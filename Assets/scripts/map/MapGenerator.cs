@@ -1,10 +1,12 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+using UnityEngine;
+using UnityEngine.AI;
 
 public class MapGenerator : MonoBehaviour
 {
-    [Header("Map Attributes")]
+
+    [Header("Settings")]
     public int width;
     public int height;
     public string seed;
@@ -22,19 +24,9 @@ public class MapGenerator : MonoBehaviour
 
     private bool generated = false;
 
-    void Start()
-    {
-        GenerateMap();
-    }
-
-    void Update()
-    {
-       /* if (Input.GetMouseButtonDown(0))
-        {
-            GenerateMap();
-        }
-        */
-    }
+    private MeshGenerator meshGen;
+    private EnvironmentGenerator envGen;
+    private NavMeshSurface navMeshSurface;
 
     private void Init()
     {
@@ -46,12 +38,17 @@ public class MapGenerator : MonoBehaviour
 
         if (useRandomSeed)
         {
-            seed = Time.time.ToString();
+            seed = System.DateTime.Now.Ticks.ToString();
         }
+
+        meshGen = CommonUtils.GetComponentOrPanic<MeshGenerator>(this.gameObject);
         
+        envGen = CommonUtils.GetComponentOrPanic<EnvironmentGenerator>(this.gameObject);
+
+        navMeshSurface = CommonUtils.GetComponentOrPanic<NavMeshSurface>(this.gameObject);
     }
 
-    void GenerateMap()
+    public void GenerateMap()
     {
         Init();
 
@@ -85,15 +82,20 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
-        MeshGenerator meshGen = GetComponent<MeshGenerator>();
+        
         meshGen.GenerateMesh(borderedMap);
+        
+        envGen.GenerateEnvorionment(borderedMap, meshGen.GetSquareGrid(), rooms, passages, seed);
 
-        EnvironmentGenerator envGen = GetComponent<EnvironmentGenerator>();
-        envGen.SetSeed(seed);
-        envGen.GenerateEnvorionment(borderedMap, meshGen.GetSquareGrid(), rooms, passages);
+        navMeshSurface.BuildNavMesh();
 
         generated = true;
         
+    }
+
+    internal Vector3 GetPlayerStartPosition()
+    {
+        return envGen.GetPlayerStartNode() == null || !envGen.GetPlayerStartNode().active ? Vector3.negativeInfinity : envGen.GetPlayerStartNode().position;
     }
 
     void ProcessMap()
@@ -128,11 +130,15 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
-        rooms.Sort();
-        rooms[0].isMainRoom = true;
-        rooms[0].isAccessibleFromMainRoom = true;
+        if(rooms.Count > 0)
+        {
+            rooms.Sort();
+            rooms[0].isMainRoom = true;
+            rooms[0].isAccessibleFromMainRoom = true;
+        }
         
         ConnectClosestRooms(rooms);
+
     }
 
     void ConnectClosestRooms(List<Room> allRooms, bool forceAccessibilityFromMainRoom = false)

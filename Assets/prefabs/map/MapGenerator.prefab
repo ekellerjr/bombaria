@@ -23,12 +23,12 @@ GameObject:
   - component: {fileID: 114252467629715624}
   - component: {fileID: 114212353732505588}
   - component: {fileID: 114850305993787744}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: MapGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!1 &1232311183883604
 GameObject:
@@ -40,12 +40,12 @@ GameObject:
   - component: {fileID: 4667334667654826}
   - component: {fileID: 33901649360153606}
   - component: {fileID: 23366881817508776}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!1 &1283239432131478
 GameObject:
@@ -57,12 +57,12 @@ GameObject:
   - component: {fileID: 4039118637908904}
   - component: {fileID: 33967039632243082}
   - component: {fileID: 23319745802593966}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!1 &1513685324483600
 GameObject:
@@ -74,12 +74,27 @@ GameObject:
   - component: {fileID: 4980643317035484}
   - component: {fileID: 33744020133838320}
   - component: {fileID: 23764263753570890}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
+  m_IsActive: 1
+--- !u!1 &1824666132997700
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4906666299830496}
+  m_Layer: 9
+  m_Name: Environment
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &4039118637908904
 Transform:
@@ -114,14 +129,28 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1169539144351712}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4039118637908904}
   - {fileID: 4667334667654826}
   - {fileID: 4980643317035484}
+  - {fileID: 4906666299830496}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4906666299830496
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1824666132997700}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4772792033968232}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4980643317035484
 Transform:
@@ -273,8 +302,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ad25e3460010e04db864f3d93d2ab60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 1654403112504196, guid: 930364fc4a98e57418f3b76fba878305,
-    type: 2}
+  environment: {fileID: 1824666132997700}
   stonePrefab: {fileID: 1109359897438982, guid: e56cc9d81cb0eb24093657e48db7aefd,
     type: 2}
 --- !u!114 &114252467629715624
@@ -309,7 +337,7 @@ MonoBehaviour:
   height: 100
   seed: 0
   useRandomSeed: 1
-  randomFillPercent: 48
+  randomFillPercent: 64
   wallThresholdSize: 50
   roomThresholdSize: 50
   roomPassageSize: 5

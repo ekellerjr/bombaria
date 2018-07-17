@@ -1,46 +1,79 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class EnvironmentGenerator : MonoBehaviour {
 
+    [Header("Settings")]
+    public GameObject environment;
+
     [Header("Prefabs")]
-    public GameObject playerPrefab;
     public GameObject stonePrefab;
+
+    private MapGenerator.Room mainRoom;
+
+    private MeshGenerator.ControlNode playerStartNode;
+
+    private GameObject player;
 
     private string seed; 
 
-    private void Init()
+    private void Init(string seed)
     {
-
+        this.seed = seed;
     }
 
-
     internal void GenerateEnvorionment(
-        ushort[,] map, MeshGenerator.SquareGrid squareGrid, ICollection<MapGenerator.Room> rooms, ICollection<MapGenerator.Passage> passages)
+        ushort[,] map,
+        MeshGenerator.SquareGrid squareGrid,
+        ICollection<MapGenerator.Room> rooms,
+        ICollection<MapGenerator.Passage> passages,
+        string seed)
     {
 
-        Init();
+        Init(seed);
 
-        MapGenerator.Room mainRoom = PrepareMainRoom(map, squareGrid, rooms);
+        PrepareMainRoom(rooms);
+        PreparePlayerStartPosition(squareGrid);
 
-        
         foreach (MapGenerator.Passage passage in passages)
         {
             foreach (MapGenerator.Coord coord in passage.passageCoords)
             {
                 Vector3 stonePosition = squareGrid.controlNodes[coord.tileX,coord.tileY].position;
 
-                Instantiate(stonePrefab, stonePosition + stonePrefab.transform.position, stonePrefab.transform.rotation);
+                GameObject stoneObject = Instantiate(stonePrefab, stonePosition + stonePrefab.transform.position, stonePrefab.transform.rotation);
+                stoneObject.transform.parent = environment.transform;
+                stoneObject.layer = environment.layer;
+                stoneObject.isStatic = environment.isStatic;
+
             }
-        }
-        
+        }   
     }
 
-    private MapGenerator.Room PrepareMainRoom(ushort[,] map,  MeshGenerator.SquareGrid squareGrid, ICollection<MapGenerator.Room> rooms)
+    private void PreparePlayerStartPosition(MeshGenerator.SquareGrid squareGrid)
     {
-        MapGenerator.Room mainRoom = null;
+        if (mainRoom == null)
+            return;
 
+        Random.InitState(seed.GetHashCode());
+        
+        int tries = 0;
+
+        do
+        {
+            MapGenerator.Coord playerStartCoord = mainRoom.tiles[Random.Range(0, mainRoom.tiles.Count - 1)];
+            playerStartNode = squareGrid.controlNodes[playerStartCoord.tileX, playerStartCoord.tileY];
+
+        } while (playerStartNode != null && (!playerStartNode.active || tries++ <= 5));
+
+        if (playerStartNode == null || !playerStartNode.active)
+        {
+            Debug.Log("Can't find player start node");
+        }
+    }
+
+    private void PrepareMainRoom(ICollection<MapGenerator.Room> rooms)
+    {
         foreach (MapGenerator.Room room in rooms)
         {
             if (room.isMainRoom)
@@ -50,29 +83,14 @@ public class EnvironmentGenerator : MonoBehaviour {
             }
         }
 
-        Random.InitState(seed.GetHashCode());
-        
-        MapGenerator.Coord playerStartCoord = mainRoom.tiles[Random.Range(0, mainRoom.tiles.Count - 1)];
-
-        // Vector3 playerStartPosition = squareGrid.GetPosition(playerStartCoord);
-
-        Vector3 playerStartPosition = squareGrid.controlNodes[playerStartCoord.tileX, playerStartCoord.tileY].position;
-
-        if (playerStartPosition == Vector3.negativeInfinity)
+        if(mainRoom == null)
         {
-            Debug.Log("Can not find player start position from playerStartCoord: " + playerStartCoord);
+            Debug.Log("Can´t find main room");
         }
-        else
-        {
-            Instantiate(playerPrefab, playerStartPosition + playerPrefab.transform.position, playerPrefab.transform.rotation);
-        }
-
-        return mainRoom;
     }
 
-    internal void SetSeed(string seed)
+    internal MeshGenerator.ControlNode GetPlayerStartNode()
     {
-        this.seed = seed;
+        return this.playerStartNode;
     }
-
 }
