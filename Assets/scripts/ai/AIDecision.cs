@@ -19,6 +19,6 @@ public abstract class AIDecision : ScriptableObject {
     
     public abstract DecisionResult OnTrigger(AIStateController controller, Collider other, AIStateController.TriggerType triggerType);
 
-    public abstract DecisionResult OnCollision(AIStateController controller, Collider other, AIStateController.CollisionType collisionType);
+    public abstract DecisionResult OnCollision(AIStateController controller, Collision collision, AIStateController.CollisionType collisionType);
 
 }

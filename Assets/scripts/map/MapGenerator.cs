@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.AI;
@@ -9,6 +10,7 @@ public class MapGenerator : MonoBehaviour
     [Header("Settings")]
     public int width;
     public int height;
+    public int borderSize = 1;
     [Range(0, 100)]
     public ushort randomFillPercent;
     public int wallThresholdSize = 50;
@@ -59,9 +61,23 @@ public class MapGenerator : MonoBehaviour
 
         ProcessMap();
 
-        /*
-        int borderSize = 1;
+        // TODO: Check why there are bugs in mesh generator if map has no borders
+        AddBorders();
+        
+        meshGen.GenerateMesh(map);
+        
+        envGen.GenerateEnvorionment(map, meshGen.GetSquareGrid(), rooms, passages);
 
+        navMeshSurface.BuildNavMesh();
+
+        enemySpawner.InitSpawn(map, meshGen.GetSquareGrid(), rooms, passages);
+
+        generated = true;
+        
+    }
+
+    private void AddBorders()
+    {
         ushort[,] borderedMap = new ushort[width + borderSize * 2, height + borderSize * 2];
 
         for (int x = 0; x < borderedMap.GetLength(0); x++)
@@ -78,18 +94,8 @@ public class MapGenerator : MonoBehaviour
                 }
             }
         }
-        */
-        
-        meshGen.GenerateMesh(map);
-        
-        envGen.GenerateEnvorionment(map, meshGen.GetSquareGrid(), rooms, passages);
 
-        navMeshSurface.BuildNavMesh();
-
-        enemySpawner.InitSpawn(map, meshGen.GetSquareGrid(), rooms, passages);
-
-        generated = true;
-        
+        this.map = borderedMap;
     }
 
     internal Vector3 GetPlayerStartPosition()
@@ -462,7 +468,7 @@ public class MapGenerator : MonoBehaviour
                 }
                 else
                 {
-                    ushort nextRandom = (ushort)Random.Range(0, 100);
+                    ushort nextRandom = (ushort)UnityEngine.Random.Range(0, 100);
                     map[x, y] = (nextRandom <= randomFillPercent) ? (ushort) 1 :(ushort) 0;
                 }
             }

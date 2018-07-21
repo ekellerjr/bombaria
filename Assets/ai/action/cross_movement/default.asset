@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: default
   m_EditorClassIdentifier: 
   speed: 3
-  minTimeBeforeChangeDirection: 2
-  maxTimeBeforeChangeDirection: 5
-  minStopTime: 1
-  maxStopTime: 2
+  minTimeBeforeChangeDirection: 5
+  maxTimeBeforeChangeDirection: 10
+  minStopTime: 3
+  maxStopTime: 5

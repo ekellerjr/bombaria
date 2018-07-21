@@ -13,6 +13,6 @@ public abstract class AIAction : ScriptableObject {
 
     public abstract void OnTrigger(AIStateController controller, Collider other, AIStateController.TriggerType triggerType);
 
-    public abstract void OnCollision(AIStateController controller, Collider other, AIStateController.CollisionType collisionType);
+    public abstract void OnCollision(AIStateController controller, Collision collision, AIStateController.CollisionType collisionType);
 
 }

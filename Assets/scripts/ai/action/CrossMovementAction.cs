@@ -4,139 +4,152 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "GameAI/Action/CrossMovement")]
 public class CrossMovementAction : AIAction
 {
-    private static readonly string[] movingDirectionNames = Enum.GetNames(typeof(MovingDirection));
 
-    private enum MovingDirection
-    {
-        Up, Right, Down, Left
-    }
+    private static readonly DiscreteMovement.MovingDirection[] moving_directions =
+        new DiscreteMovement.MovingDirection[] {
+            DiscreteMovement.MovingDirection.forward,
+            DiscreteMovement.MovingDirection.right,
+            DiscreteMovement.MovingDirection.backward,
+            DiscreteMovement.MovingDirection.left
+        };
+
+    private static readonly int TIMER_KEY = CommonUtils.RandomHashKey("timer");
+    private static readonly int STOP_TIMER_KEY   = CommonUtils.RandomHashKey("stop_timer");
+
+    private static readonly int CUR_TIME_BEFORE_DIR_CHANGE_KEY = CommonUtils.RandomHashKey("cur_time_before_dir_change");
+    private static readonly int CUR_STOP_TIME_KEY = CommonUtils.RandomHashKey("cur_stop_time");
+
+    private static readonly int CUR_MOVING_DIR = CommonUtils.RandomHashKey("cur_moving_direction");
 
     [Header("Fixed Values")]
     public float speed = 3;
 
     [Header("Random Values")]
-    public float minTimeBeforeChangeDirection = 2;
-    public float maxTimeBeforeChangeDirection = 5;
+    public float minTimeBeforeDirectionChange = 2;
+    public float maxTimeBeforeDirectionChange = 5;
 
     public float minStopTime = 1;
     public float maxStopTime = 2;
 
-    private float curTimeBeforeChangeDirection;
-    private float curStopTime;
-
-    private float timer;
-    private float stopTimer;
-
-    private Vector3 movement;
-    private MovingDirection curNovingDirection;
-
-    private Rigidbody rb;
-
     public override void Init(AIStateController controller)
     {
-        rb = CommonUtils.GetComponentOrPanic<Rigidbody>(controller.gameObject);
-
-        movement = Vector3.zero;
-
-        InitTimer();
-
-        InitCurTimeBeforeChangeDirection();
+        if (controller.GetRigidbody() == null)
+            throw new AIException("Rigidbody component in AIStateController: " + controller + " is neccessary");
 
         InitCurStopTime();
+        InitCurTimeBeforeChangeDirection();
 
-        ChangeDirection();
-
-    }
-
-    private void InitTimer()
-    {
-        timer = 0;
-        stopTimer = 0;
+        Resume(controller);
     }
 
     private void InitCurStopTime()
     {
         minStopTime = minStopTime < 0.1f ? 0.1f : minStopTime;
-
-        curStopTime = UnityEngine.Random.Range(minStopTime, maxStopTime);
+        maxStopTime = maxStopTime < minStopTime ? minStopTime * 2 : maxStopTime;
     }
 
     private void InitCurTimeBeforeChangeDirection()
     {
-        minTimeBeforeChangeDirection = minTimeBeforeChangeDirection < 0.5f ? 0.5f : minTimeBeforeChangeDirection;
-
-        curTimeBeforeChangeDirection = UnityEngine.Random.Range(minTimeBeforeChangeDirection, maxTimeBeforeChangeDirection);
+        minTimeBeforeDirectionChange = minTimeBeforeDirectionChange < 0.5f ? 0.5f : minTimeBeforeDirectionChange;
+        maxTimeBeforeDirectionChange = maxTimeBeforeDirectionChange < minTimeBeforeDirectionChange ? minTimeBeforeDirectionChange * 2
+            : maxTimeBeforeDirectionChange;
     }
 
-    private void ChangeDirection()
+    private void ResetTimer(AIStateController controller)
     {
-        MovingDirection nextMovingDirection;
+        controller.SetFloat(TIMER_KEY, 0f);
+        controller.SetFloat(STOP_TIMER_KEY, 0f);
+    }
+
+    private void ResetCurStopTime(AIStateController controller)
+    {
+        controller.SetFloat(CUR_STOP_TIME_KEY, UnityEngine.Random.Range(minStopTime, maxStopTime));
+    }
+
+    private void ResetCurTimeBeforeChangeDirection(AIStateController controller)
+    {
+        controller.SetFloat(CUR_TIME_BEFORE_DIR_CHANGE_KEY, UnityEngine.Random.Range(minTimeBeforeDirectionChange, maxTimeBeforeDirectionChange));
+    }
+
+    private void ChangeDirection(AIStateController controller)
+    {
+        DiscreteMovement.MovingDirection nextMovingDirection;
         int tries = 0;
         do
         {
-            string movingDirectionName = movingDirectionNames[UnityEngine.Random.Range(0, movingDirectionNames.Length)];
+            nextMovingDirection = (DiscreteMovement.MovingDirection)moving_directions.GetValue(UnityEngine.Random.Range(0, moving_directions.Length));
 
-            nextMovingDirection = (MovingDirection)Enum.Parse(typeof(MovingDirection), movingDirectionName);
+        } while (nextMovingDirection == GetCurMovingDirection(controller) && tries++ <= moving_directions.Length);
 
-        } while (nextMovingDirection != curNovingDirection && tries++ <= movingDirectionNames.Length);
-
-        curNovingDirection = nextMovingDirection;
+        SetCurMovingDirection(controller, nextMovingDirection);
     }
 
     public override void Dispose(AIStateController controller) { }
 
-    public override void OnCollision(AIStateController controller, Collider other, AIStateController.CollisionType collisionType) { }
+    public override void OnCollision(AIStateController controller, Collision collision, AIStateController.CollisionType collisionType)
+    {
+        if (collision.gameObject.CompareTag(CommonTags.FLOOR) || collisionType != AIStateController.CollisionType.CollisionEnter )
+        {
+            return;
+        }
+
+        Collide(controller);
+    }
+
+    private void Collide(AIStateController controller)
+    {
+        controller.SetFloat(TIMER_KEY, controller.getFloat(CUR_TIME_BEFORE_DIR_CHANGE_KEY));
+    }
 
     public override void OnTrigger(AIStateController controller, Collider other, AIStateController.TriggerType triggerType) {
 
-        switch (triggerType)
+        if (other.CompareTag(CommonTags.FLOOR) || triggerType != AIStateController.TriggerType.TriggerEnter)
         {
-            case AIStateController.TriggerType.TriggerEnter:
-                timer = curTimeBeforeChangeDirection;
-                break;
+            return;
         }
+
+        Collide(controller);
     }
 
     public override void Resume(AIStateController controller)
     {
-        timer = 0;
+        ResetTimer(controller);
+
+        ResetCurTimeBeforeChangeDirection(controller);
+
+        ResetCurStopTime(controller);
+
+        ChangeDirection(controller);
     }
 
     public override void UpdateAction(AIStateController controller)
     {
-        timer += Time.deltaTime;
-
-        if (timer >= curTimeBeforeChangeDirection)
+        controller.SetFloat(TIMER_KEY, controller.getFloat(TIMER_KEY) + Time.deltaTime);
+        
+        if (controller.getFloat(TIMER_KEY) >= controller.getFloat(CUR_TIME_BEFORE_DIR_CHANGE_KEY))
         {
-            stopTimer += Time.deltaTime;
+            controller.SetFloat(STOP_TIMER_KEY, controller.getFloat(STOP_TIMER_KEY) + Time.deltaTime);
 
-            if (stopTimer >= curStopTime)
+            if (controller.getFloat(STOP_TIMER_KEY) >= controller.getFloat(CUR_STOP_TIME_KEY))
             {
-                ChangeDirection();
-                InitTimer();
-                InitCurStopTime();
-                InitCurTimeBeforeChangeDirection();
+                Resume(controller);
             }
         }
         else
         {
-            switch (curNovingDirection)
-            {
-                case MovingDirection.Up:
-                    CommonUtils.Move(rb, Vector3.forward, speed);
-                    break;
-                case MovingDirection.Right:
-                    CommonUtils.Move(rb, Vector3.right, speed);
-                    break;
-                case MovingDirection.Down:
-                    CommonUtils.Move(rb, -Vector3.forward, speed);
-                    break;
-                case MovingDirection.Left:
-                    CommonUtils.Move(rb, -Vector3.right, speed);
-                    break;
-                default:
-                    break;
-            }
+            DiscreteMovement.MoveDiscrete(controller.GetRigidbody(), GetCurMovingDirection(controller), speed);
+            DiscreteMovement.RotateDiscrete(controller.GetRigidbody(), GetCurMovingDirection(controller));
         }
     }
+
+    private DiscreteMovement.MovingDirection GetCurMovingDirection(AIStateController controller)
+    {
+        System.Object value = controller.getValue(CUR_MOVING_DIR);
+        return value == null ? default(DiscreteMovement.MovingDirection) : (DiscreteMovement.MovingDirection)value;
+    }
+
+    private void SetCurMovingDirection(AIStateController controller, DiscreteMovement.MovingDirection direction) {
+        controller.SetValue(CUR_MOVING_DIR, direction);
+    }
+
 }

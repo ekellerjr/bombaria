@@ -3,9 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Explosion : MonoBehaviour
-{
-
+public class Explosion : MonoBehaviour {
 
     [Header("Transform Scaling")]
     public bool scaleTransform = false;
@@ -31,7 +29,6 @@ public class Explosion : MonoBehaviour
     private bool exploding;
 
     private float curSphereRadius;
-    private float dampingRange;
 
     private void Init()
     {
@@ -68,6 +65,7 @@ public class Explosion : MonoBehaviour
             return true;
 
         explosionLight.range = explosionLight.range >= maxLightRange ? maxLightRange : explosionLight.range + lightRangeIncreasingSpeed * Time.deltaTime;
+
         explosionLight.intensity = explosionLight.intensity >= maxLightIntensity ? maxLightIntensity :
             explosionLight.intensity + lightIntensityIncreasingSpeed * Time.deltaTime;
 
@@ -83,7 +81,10 @@ public class Explosion : MonoBehaviour
 
         foreach (Collider c in hitColliders)
         {
-            if (c.gameObject.CompareTag(CommonTags.DESTRUCTIBLE_TAG))
+            if (CommonUtils.CompareTags(
+                c.gameObject, 
+                CommonTags.DESTRUCTIBLE,
+                CommonTags.ENEMY))
             {
                 Destroy(c.gameObject);
             }
@@ -106,31 +107,6 @@ public class Explosion : MonoBehaviour
             && transform.localScale.y >= targetScale.y
             && transform.localScale.z >= targetScale.z;
     }
-
-    /*
-    void OnTriggerEnter(Collider other)
-    {
-        // Debug.Log("Trigger: " + other.gameObject.tag);
-
-        if (other.CompareTag(CommonTags.DESTRUCTIBLE_TAG))
-        {
-            Destroy(other.gameObject);
-        }
-
-    }
-    */
-
-    /*
-    void OnCollisionEnter(Collision collision)
-    {
-        Debug.Log("Collision: " + collision.gameObject.tag);
-
-        if (collision.gameObject.CompareTag(CommonTags.DESTRUCTIBLE_TAG))
-        {
-            Destroy(collision.gameObject);
-        }
-    }
-    */
 
     public void Explode()
     {

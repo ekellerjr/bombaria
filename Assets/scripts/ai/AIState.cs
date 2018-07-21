@@ -56,6 +56,30 @@ public class AIState : ScriptableObject {
         OnTriggerTransitions(controller, other, triggerType);
     }
 
+    public void OnCollision(AIStateController controller, Collision collision, AIStateController.CollisionType collisionType)
+    {
+        OnCollisionActions(controller, collision, collisionType);
+        OnCollisionTransitions(controller, collision, collisionType);
+    }
+
+    private void OnCollisionTransitions(AIStateController controller, Collision collision, AIStateController.CollisionType collisionType)
+    {
+        foreach (AIStateTransition transition in transitions)
+        {
+            AIDecision.DecisionResult decisionResult = transition.decision.OnCollision(controller, collision, collisionType);
+
+            SwitchToState(controller, transition, decisionResult);
+        }
+    }
+
+    private void OnCollisionActions(AIStateController controller, Collision collision, AIStateController.CollisionType collisionType)
+    {
+        foreach (AIAction action in actions)
+        {
+            action.OnCollision(controller, collision, collisionType);
+        }
+    }
+
     protected void UpdateTransitions(AIStateController controller)
     {
         foreach (AIStateTransition transition in transitions)

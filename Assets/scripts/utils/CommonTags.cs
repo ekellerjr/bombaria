@@ -4,11 +4,17 @@ using UnityEngine;
 
 public static class CommonTags {
 
-    public const string PLAYER_TAG = "Player";
+    public const string PLAYER = "Player";
 
-    public const string MAIN_CAMERA_TAG = "MainCamera";
+    public const string MAIN_CAMERA = "MainCamera";
 
-    public const string DESTRUCTIBLE_TAG = "Destructible";
+    public const string DESTRUCTIBLE = "Destructible";
 
-    public const string GAME_CONTROLLER_TAG = "GameController";
+    public const string GAME_CONTROLLER = "GameController";
+
+    public const string FLOOR = "Floor";
+
+    public const string WALLS = "Walls";
+
+    public static string ENEMY = "Enemy";
 }

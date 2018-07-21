@@ -18,7 +18,7 @@ public class Player : MonoBehaviour {
 
     private void AttachToMainCamera()
     {
-        GameObject mainCamera = GameObject.FindGameObjectWithTag(CommonTags.MAIN_CAMERA_TAG);
+        GameObject mainCamera = GameObject.FindGameObjectWithTag(CommonTags.MAIN_CAMERA);
 
         if (mainCamera == null)
         {
