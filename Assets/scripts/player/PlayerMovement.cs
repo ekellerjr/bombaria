@@ -12,16 +12,17 @@ public class PlayerMovement : MonoBehaviour {
 
     public float speed = 6f;
 
-    Vector3 movement;
-    Rigidbody rigidbody;
-    Transform transform;
+    private Vector3 movement;
+
+    private Rigidbody rb;
+    //Transform transform;
 
     MoveDirection currentMoveDirection;
 
     private void Awake()
     {
-        rigidbody = GetComponent<Rigidbody>();
-        transform = GetComponent<Transform>();
+        rb = CommonUtils.GetComponentOrPanic<Rigidbody>(this.gameObject);
+        // transform = GetComponent<Transform>();
 
         currentMoveDirection = MoveDirection.forward;
     }
@@ -49,15 +50,18 @@ public class PlayerMovement : MonoBehaviour {
         {
             newMoveDirection = MoveDirection.right;
         }
-        else if (h < 0)
+
+        if (h < 0)
         {
             newMoveDirection = MoveDirection.left;
         }
-        else if (v < 0)
+
+        if (v < 0)
         {
             newMoveDirection = MoveDirection.backward;
         }
-        else if (v > 0)
+
+        if (v > 0)
         {
             newMoveDirection = MoveDirection.forward;
         }
@@ -86,19 +90,16 @@ public class PlayerMovement : MonoBehaviour {
             default:
                 break;
         }
-        
-        Quaternion newRotation = Quaternion.Euler(lookDirection);
 
-        rigidbody.MoveRotation(newRotation);
+        rb.MoveRotation(Quaternion.Euler(lookDirection));
     }
 
     private void Move(float h, float v)
     {
         movement.Set(h, 0f, v);
 
-        movement = movement.normalized * speed * Time.deltaTime;
-
-        rigidbody.MovePosition(transform.position + movement);
+        CommonUtils.Move(rb, movement, speed);
     }
+
 
 }

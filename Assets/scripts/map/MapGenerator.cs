@@ -9,8 +9,6 @@ public class MapGenerator : MonoBehaviour
     [Header("Settings")]
     public int width;
     public int height;
-    public string seed;
-    public bool useRandomSeed;
     [Range(0, 100)]
     public ushort randomFillPercent;
     public int wallThresholdSize = 50;
@@ -27,6 +25,7 @@ public class MapGenerator : MonoBehaviour
     private MeshGenerator meshGen;
     private EnvironmentGenerator envGen;
     private NavMeshSurface navMeshSurface;
+    private EnemySpawner enemySpawner;
 
     private void Init()
     {
@@ -36,16 +35,13 @@ public class MapGenerator : MonoBehaviour
 
         rooms = new List<Room>();
 
-        if (useRandomSeed)
-        {
-            seed = System.DateTime.Now.Ticks.ToString();
-        }
-
         meshGen = CommonUtils.GetComponentOrPanic<MeshGenerator>(this.gameObject);
         
         envGen = CommonUtils.GetComponentOrPanic<EnvironmentGenerator>(this.gameObject);
 
         navMeshSurface = CommonUtils.GetComponentOrPanic<NavMeshSurface>(this.gameObject);
+
+        enemySpawner = CommonUtils.GetComponentOrPanic<EnemySpawner>(this.gameObject);
     }
 
     public void GenerateMap()
@@ -63,6 +59,7 @@ public class MapGenerator : MonoBehaviour
 
         ProcessMap();
 
+        /*
         int borderSize = 1;
 
         ushort[,] borderedMap = new ushort[width + borderSize * 2, height + borderSize * 2];
@@ -81,13 +78,15 @@ public class MapGenerator : MonoBehaviour
                 }
             }
         }
-
+        */
         
-        meshGen.GenerateMesh(borderedMap);
+        meshGen.GenerateMesh(map);
         
-        envGen.GenerateEnvorionment(borderedMap, meshGen.GetSquareGrid(), rooms, passages, seed);
+        envGen.GenerateEnvorionment(map, meshGen.GetSquareGrid(), rooms, passages);
 
         navMeshSurface.BuildNavMesh();
+
+        enemySpawner.InitSpawn(map, meshGen.GetSquareGrid(), rooms, passages);
 
         generated = true;
         
@@ -95,7 +94,7 @@ public class MapGenerator : MonoBehaviour
 
     internal Vector3 GetPlayerStartPosition()
     {
-        return envGen.GetPlayerStartNode() == null || !envGen.GetPlayerStartNode().active ? Vector3.negativeInfinity : envGen.GetPlayerStartNode().position;
+        return envGen.GetPlayerStartNode() == null || envGen.GetPlayerStartNode().active ? Vector3.negativeInfinity : envGen.GetPlayerStartNode().position;
     }
 
     void ProcessMap()
@@ -452,9 +451,7 @@ public class MapGenerator : MonoBehaviour
     }
 
     void RandomFillMap()
-    {
-        Random.InitState(seed.GetHashCode());
-        
+    {        
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)

@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 114252467629715624}
   - component: {fileID: 114212353732505588}
   - component: {fileID: 114850305993787744}
+  - component: {fileID: 114353164002258280}
   m_Layer: 9
   m_Name: MapGenerator
   m_TagString: Untagged
@@ -59,7 +60,7 @@ GameObject:
   - component: {fileID: 23319745802593966}
   m_Layer: 9
   m_Name: Walls
-  m_TagString: Untagged
+  m_TagString: Walls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -76,10 +77,25 @@ GameObject:
   - component: {fileID: 23764263753570890}
   m_Layer: 9
   m_Name: Floor
-  m_TagString: Untagged
+  m_TagString: Floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
+  m_IsActive: 1
+--- !u!1 &1691853189041744
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4938569434630204}
+  m_Layer: 9
+  m_Name: Enemies
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!1 &1824666132997700
 GameObject:
@@ -136,6 +152,7 @@ Transform:
   - {fileID: 4667334667654826}
   - {fileID: 4980643317035484}
   - {fileID: 4906666299830496}
+  - {fileID: 4938569434630204}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -151,6 +168,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4772792033968232}
   m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4938569434630204
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1691853189041744}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4772792033968232}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4980643317035484
 Transform:
@@ -322,6 +352,20 @@ MonoBehaviour:
   squareSize: 1
   wallHeight: 5
   is2D: 0
+--- !u!114 &114353164002258280
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1169539144351712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97616673a2f662947a8eeac10bebfcdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyPrefab: {fileID: 1819539823750046, guid: dd2bd7381e2ad3e458bd7d9d19e5f6be,
+    type: 2}
+  enemiesHolder: {fileID: 1691853189041744}
 --- !u!114 &114644116906130092
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -335,9 +379,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 200
   height: 100
-  seed: 0
-  useRandomSeed: 1
-  randomFillPercent: 64
+  randomFillPercent: 50
   wallThresholdSize: 50
   roomThresholdSize: 50
   roomPassageSize: 5

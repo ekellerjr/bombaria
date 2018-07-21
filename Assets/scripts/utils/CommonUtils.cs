@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.AI;
 
 public static class CommonUtils {
 
@@ -11,12 +12,36 @@ public static class CommonUtils {
 
     }
 
+    public class GameObjectNotFoundException : SystemException
+    {
+        public GameObjectNotFoundException(string message) : base(message) { }
+
+        public GameObjectNotFoundException(string message, Exception inner) : base(message, inner) { }
+
+    }
+
     public static bool IsInRange(int x, int y, int maxX, int maxY)
     {
         return x >= 0 && x < maxX && y >= 0 && y < maxY;
     }
 
-    public static T FindComponentInGameObjectByTag<T>(string tag)
+    public static T GetComponentInGameControllerOrPanic<T>()
+    {
+        return GetComponentOrPanic<T>(FindGameObjectByTagOrPanic(CommonTags.GAME_CONTROLLER_TAG));
+    }
+
+    public static GameObject FindGameObjectByTagOrPanic(string tag)
+    {
+        GameObject go = GameObject.FindGameObjectWithTag(tag);
+
+        if (go == null)
+            throw new GameObjectNotFoundException("GameObject woth tag:" + tag + " not found");
+
+        return go;
+    }
+
+
+    public static T GetComponentInGameObjectFoundWithTag<T>(string tag)
     {
         GameObject go = GameObject.FindGameObjectWithTag(tag);
 
@@ -38,4 +63,11 @@ public static class CommonUtils {
 
         return component;
     }
+
+    public static void Move(Rigidbody rigidbody, Vector3 movement, float speed)
+    {
+        Vector3 newPos = rigidbody.transform.position + (movement.normalized * speed * Time.deltaTime);
+        rigidbody.MovePosition(newPos);
+    }
+
 }

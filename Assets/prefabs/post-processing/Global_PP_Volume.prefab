@@ -9,30 +9,30 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1664977522407696}
+  m_RootGameObject: {fileID: 1497721492739636}
   m_IsPrefabAsset: 1
---- !u!1 &1664977522407696
+--- !u!1 &1497721492739636
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4017105417476192}
-  - component: {fileID: 114462854598558080}
-  m_Layer: 0
-  m_Name: GameController
-  m_TagString: GameController
+  - component: {fileID: 4815065039285666}
+  - component: {fileID: 114862778741207458}
+  m_Layer: 8
+  m_Name: Global_PP_Volume
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4017105417476192
+--- !u!4 &4815065039285666
 Transform:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1664977522407696}
+  m_GameObject: {fileID: 1497721492739636}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 255, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -40,22 +40,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114462854598558080
+--- !u!114 &114862778741207458
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1664977522407696}
+  m_GameObject: {fileID: 1497721492739636}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94362a619e752974ab2502749f3564be, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugMode: 1
-  rebuildMapKey: 114
-  seed: 
-  useRandomSeed: 1
-  mapGeneratorPrefab: {fileID: 1169539144351712, guid: f7f3ffe6aae666e4b8ae2136c7e4c708,
-    type: 2}
-  playerPrefab: {fileID: 1654403112504196, guid: 930364fc4a98e57418f3b76fba878305,
-    type: 2}
+  sharedProfile: {fileID: 11400000, guid: 70e62acea76551b42a6ded5b49c98e65, type: 2}
+  isGlobal: 1
+  blendDistance: 0
+  weight: 1
+  priority: 0
