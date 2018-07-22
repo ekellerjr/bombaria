@@ -26,10 +26,10 @@ public class AIStateController : MonoBehaviour {
 
     private GameController gameController;
 
-    private Dictionary<int, System.Object> valueStorage;
+    private readonly Dictionary<int, System.Object> valueStorage = new Dictionary<int, object>();
 
     private int individualHashCode;
-
+    
     public NavMeshAgent GetNavMeshAgent()
     {
         return this.agent;
@@ -49,8 +49,6 @@ public class AIStateController : MonoBehaviour {
         this.rb = GetComponent<Rigidbody>();
 
         this.gameController = CommonUtils.GetComponentInGameControllerOrPanic<GameController>();
-
-        valueStorage = new Dictionary<int, System.Object>();
 
         startState.Init(this);
 

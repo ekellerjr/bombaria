@@ -24,7 +24,7 @@ public class MeshGenerator : MonoBehaviour
 
     private SquareGrid squareGrid;
 
-    private bool generating;
+    // private bool generating;
     
     private void Init(ushort[,] map, float squareSize)
     {
@@ -48,9 +48,12 @@ public class MeshGenerator : MonoBehaviour
 
     public void GenerateMesh(ushort[,] map)
     {
-        this.generating = true;
+        // this.generating = true;
 
         Init(map, squareSize);
+
+        MeshCollider caveCollider = walls.GetComponent<MeshCollider>();
+        Destroy(caveCollider);
 
         for (int x = 0; x < squareGrid.squares.GetLength(0); x++)
         {
@@ -68,6 +71,9 @@ public class MeshGenerator : MonoBehaviour
         mesh.RecalculateNormals();
 
         cave.mesh = mesh;
+
+        caveCollider = cave.gameObject.AddComponent<MeshCollider>();
+        caveCollider.sharedMesh = mesh;
 
         int tileAmount = 10;
         Vector2[] uvs = new Vector2[vertices.Count];
@@ -90,7 +96,7 @@ public class MeshGenerator : MonoBehaviour
             CreateFloorMesh();
         }
 
-        this.generating = false;
+        // this.generating = false;
 
     }
 

@@ -379,7 +379,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 200
   height: 100
-  randomFillPercent: 50
+  borderSize: 1
+  randomFillPercent: 13
   wallThresholdSize: 50
   roomThresholdSize: 50
   roomPassageSize: 5

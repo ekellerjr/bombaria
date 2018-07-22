@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnvironmentGenerator : MonoBehaviour {
+public class EnvironmentGenerator : MonoBehaviour
+{
 
     public static readonly string[] environmentObjectTypeNames = Enum.GetNames(typeof(EnvironmentObjectType));
 
@@ -30,7 +31,6 @@ public class EnvironmentGenerator : MonoBehaviour {
         Init();
 
         PrepareMainRoom(rooms);
-        PreparePlayerStartPosition(map, squareGrid);
 
         foreach (MapGenerator.Passage passage in passages)
         {
@@ -47,22 +47,29 @@ public class EnvironmentGenerator : MonoBehaviour {
                 map[stoneNode.mapCoords.tileX, stoneNode.mapCoords.tileY] = (ushort)EnvironmentObjectType.Stone;
 
             }
-        }   
+        }
+
+        PreparePlayerStartPosition(map, squareGrid);
     }
 
     private void PreparePlayerStartPosition(ushort[,] map, MeshGenerator.SquareGrid squareGrid)
     {
         if (mainRoom == null)
             return;
-        
+
         int tries = 0;
+        bool valid = false;
 
         do
         {
             MapGenerator.Coord playerStartCoord = mainRoom.tiles[UnityEngine.Random.Range(0, mainRoom.tiles.Count - 1)];
             playerStartNode = squareGrid.controlNodes[playerStartCoord.tileX, playerStartCoord.tileY];
 
-        } while ((playerStartNode == null || playerStartNode.active) && tries++ <= 5);
+            valid = playerStartNode != null
+                && !playerStartNode.active // active means wall
+                && map[playerStartNode.mapCoords.tileX, playerStartNode.mapCoords.tileY] == (ushort)EnvironmentObjectType.Void;
+
+        } while (!valid && tries++ <= mainRoom.tiles.Count);
 
         if (playerStartNode == null || playerStartNode.active)
         {
@@ -85,7 +92,7 @@ public class EnvironmentGenerator : MonoBehaviour {
             }
         }
 
-        if(mainRoom == null)
+        if (mainRoom == null)
         {
             Debug.Log("Can´t find main room");
         }

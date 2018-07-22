@@ -160,5 +160,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  smoothing: 5
-  offset: {x: 0, y: 15, z: -22}
+  camFollowSmoothing: 10
+  obstacleFlankingSmoothing: 2
+  stayOnTargetAfterFlankingTime: 0.1
+  timeBeforeBeginFlanking: 0.1
+  sphereCastRadius: 0.5
+  offset: {x: 0, y: 10, z: 15}
+  freezeRotationX: 0
+  freezeRotationY: 1
+  freezeRotationZ: 0

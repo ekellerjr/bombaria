@@ -34,10 +34,10 @@ public static class CommonUtils
 
     public static T GetComponentInGameControllerOrPanic<T>()
     {
-        return GetComponentOrPanic<T>(FindGameObjectByTagOrPanic(CommonTags.GAME_CONTROLLER));
+        return GetComponentOrPanic<T>(FindGameObjectWithTagOrPanic(CommonTags.GAME_CONTROLLER));
     }
 
-    public static GameObject FindGameObjectByTagOrPanic(string tag)
+    public static GameObject FindGameObjectWithTagOrPanic(string tag)
     {
         GameObject go = GameObject.FindGameObjectWithTag(tag);
 
@@ -47,6 +47,10 @@ public static class CommonUtils
         return go;
     }
 
+    public static T GetComponentInGameObjectFoundWithTagOrPanic<T>(string tag)
+    {
+        return GetComponentOrPanic<T>(FindGameObjectWithTagOrPanic(tag));
+    }
 
     public static T GetComponentInGameObjectFoundWithTag<T>(string tag)
     {

@@ -22,7 +22,7 @@ public class MapGenerator : MonoBehaviour
     private HashSet<Passage> passages;
     private List<Room> rooms;
 
-    private bool generated = false;
+   //  private bool generated = false;
 
     private MeshGenerator meshGen;
     private EnvironmentGenerator envGen;
@@ -50,7 +50,7 @@ public class MapGenerator : MonoBehaviour
     {
         Init();
 
-        generated = false;
+        // generated = false;
         
         RandomFillMap();
 
@@ -72,7 +72,7 @@ public class MapGenerator : MonoBehaviour
 
         enemySpawner.InitSpawn(map, meshGen.GetSquareGrid(), rooms, passages);
 
-        generated = true;
+        // generated = true;
         
     }
 
