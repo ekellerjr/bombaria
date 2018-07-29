@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37312052, g: 0.3807414, b: 0.35872862, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311992, g: 0.38074034, b: 0.35872713, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -155,7 +155,7 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 09d0c403e1186f44ab56a44161cf72bc, type: 2}
   m_IsPrefabAsset: 0
---- !u!1001 &1579902417
+--- !u!1001 &1299166444
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -197,12 +197,7 @@ Prefab:
     - target: {fileID: 114363129148902952, guid: afb9aef88e7846e47a5145d67368725d,
         type: 2}
       propertyPath: offset.y
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 114363129148902952, guid: afb9aef88e7846e47a5145d67368725d,
-        type: 2}
-      propertyPath: offset.z
-      value: 22
+      value: 25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: afb9aef88e7846e47a5145d67368725d, type: 2}
@@ -245,6 +240,16 @@ Prefab:
     - target: {fileID: 4017105417476192, guid: 365e96c2bc257824eaee693c8aaaa518, type: 2}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114462854598558080, guid: 365e96c2bc257824eaee693c8aaaa518,
+        type: 2}
+      propertyPath: useRandomSeed
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114462854598558080, guid: 365e96c2bc257824eaee693c8aaaa518,
+        type: 2}
+      propertyPath: seed
+      value: Liebu
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 365e96c2bc257824eaee693c8aaaa518, type: 2}

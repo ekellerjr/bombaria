@@ -20,8 +20,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4062507553453172}
   - component: {fileID: 20471256342312136}
-  - component: {fileID: 81778018341792770}
   - component: {fileID: 114363129148902952}
+  - component: {fileID: 81778018341792770}
   - component: {fileID: 114140576544343818}
   m_Layer: 0
   m_Name: Main Camera
@@ -36,8 +36,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1045337942272470}
-  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: 0, y: 25, z: -25}
+  m_LocalRotation: {x: 0.70660335, y: 0, z: 0, w: 0.70760995}
+  m_LocalPosition: {x: 69.37, y: 16, z: 8.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -160,12 +160,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  camFollowSmoothing: 10
-  obstacleFlankingSmoothing: 2
-  stayOnTargetAfterFlankingTime: 0.1
-  timeBeforeBeginFlanking: 0.1
-  sphereCastRadius: 0.5
-  offset: {x: 0, y: 10, z: 15}
+  smoothTime: 0.01
+  maxSmoothSpeed: 50
+  flankSmoothing: 1
+  sphereRadius: 3
+  offset: {x: 0, y: 15, z: -22}
   freezeRotationX: 0
   freezeRotationY: 1
   freezeRotationZ: 0

@@ -377,10 +377,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 607fb1b7451b5474c985ac8b24817a8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 200
-  height: 100
+  width: 100
+  height: 50
   borderSize: 1
-  randomFillPercent: 13
+  randomFillPercent: 50
   wallThresholdSize: 50
   roomThresholdSize: 50
   roomPassageSize: 5
