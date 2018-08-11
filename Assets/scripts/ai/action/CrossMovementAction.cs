@@ -88,7 +88,7 @@ public class CrossMovementAction : AIAction
 
     public override void OnCollision(AIStateController controller, Collision collision, AIStateController.CollisionType collisionType)
     {
-        if (collision.gameObject.CompareTag(CommonTags.FLOOR) || collisionType != AIStateController.CollisionType.CollisionEnter )
+        if (collision.gameObject.CompareTag(BombariaTags.FLOOR) || collisionType != AIStateController.CollisionType.CollisionEnter )
         {
             return;
         }
@@ -103,7 +103,7 @@ public class CrossMovementAction : AIAction
 
     public override void OnTrigger(AIStateController controller, Collider other, AIStateController.TriggerType triggerType) {
 
-        if (other.CompareTag(CommonTags.FLOOR) || triggerType != AIStateController.TriggerType.TriggerEnter)
+        if (other.CompareTag(BombariaTags.FLOOR) || triggerType != AIStateController.TriggerType.TriggerEnter)
         {
             return;
         }

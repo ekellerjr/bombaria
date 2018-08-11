@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Blinking : MonoBehaviour {
+public class Blinking : MonoBehaviour
+{
 
     public Material blinkMaterial;
 
@@ -15,13 +16,13 @@ public class Blinking : MonoBehaviour {
     private double durationDiv4;
     private double durationDiv8;
     private double durationDiv16;
-    
+
     private Material originalMaterial;
 
     private Renderer rndr;
 
     private double timer;
-    
+
     private double curBlinkTime;
 
     private bool blinking;
@@ -29,7 +30,8 @@ public class Blinking : MonoBehaviour {
     private double blinkPeriod;
 
     // Use this for initialization
-    private void Init () {
+    private void Init()
+    {
 
         rndr = GetComponent<Renderer>();
         originalMaterial = rndr.materials[0];
@@ -40,10 +42,11 @@ public class Blinking : MonoBehaviour {
 
         this.blinking = false;
 
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
         // Debug.Log("blinking: " + this.blinking);
 
         if (!this.blinking)
@@ -55,9 +58,9 @@ public class Blinking : MonoBehaviour {
         curBlinkTime += Time.deltaTime;
 
         // Debug.Log("timer: " + timer);
-       // Debug.Log("curBlinkTime: " + curBlinkTime);
-       
-        
+        // Debug.Log("curBlinkTime: " + curBlinkTime);
+
+
 
         if (timer < duration025)
         {
@@ -82,16 +85,16 @@ public class Blinking : MonoBehaviour {
             return;
         }
 
-        
+
         // Debug.Log("blinkPeriod: " + blinkPeriod);
-        
+
 
         if (curBlinkTime >= blinkPeriod)
         {
             Blink();
             curBlinkTime = 0;
         }
-	}
+    }
 
     private void Blink()
     {
@@ -99,8 +102,8 @@ public class Blinking : MonoBehaviour {
 
         Material[] mats = rndr.materials;
         Material curMat = mats[0];
-        
-        if(curMat == originalMaterial)
+
+        if (curMat == originalMaterial)
         {
             mats[0] = blinkMaterial;
         }
@@ -127,7 +130,7 @@ public class Blinking : MonoBehaviour {
         this.durationDiv4 = duration / 16;
         this.durationDiv8 = duration / 32;
         this.durationDiv16 = duration / 128;
-        
+
         this.blinking = true;
     }
 

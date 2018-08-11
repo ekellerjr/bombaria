@@ -8,6 +8,8 @@ TagManager:
   - Floor
   - Walls
   - Enemy
+  - Settings
+  - Bomb
   layers:
   - Default
   - TransparentFX

@@ -4,6 +4,17 @@ using UnityEngine.AI;
 
 public static class CommonUtils
 {
+    public enum GetComponentPostCommand
+    {
+        None,
+        DestroyGameObject
+    }
+
+    public enum CompareTagsMode
+    {
+        MatchOneTag,
+        MatchAllTags
+    }
 
     public class ComponentNotFoundException : SystemException
     {
@@ -32,9 +43,9 @@ public static class CommonUtils
         return x >= 0 && x < maxX && y >= 0 && y < maxY;
     }
 
-    public static T GetComponentInGameControllerOrPanic<T>()
+    public static T GetComponentInGameControllerOrPanic<T>(GetComponentPostCommand command = GetComponentPostCommand.None)
     {
-        return GetComponentOrPanic<T>(FindGameObjectWithTagOrPanic(CommonTags.GAME_CONTROLLER));
+        return GetComponentOrPanic<T>(FindGameObjectWithTagOrPanic(CommonTags.GAME_CONTROLLER), command);
     }
 
     public static GameObject FindGameObjectWithTagOrPanic(string tag)
@@ -42,35 +53,43 @@ public static class CommonUtils
         GameObject go = GameObject.FindGameObjectWithTag(tag);
 
         if (go == null)
-            throw new GameObjectNotFoundException("GameObject woth tag:" + tag + " not found");
+            throw new GameObjectNotFoundException("GameObject with tag:" + tag + " not found");
 
         return go;
     }
 
-    public static T GetComponentInGameObjectFoundWithTagOrPanic<T>(string tag)
+    public static T GetComponentInGameObjectFoundWithTagOrPanic<T>(string tag, GetComponentPostCommand command = GetComponentPostCommand.None)
     {
-        return GetComponentOrPanic<T>(FindGameObjectWithTagOrPanic(tag));
+        return GetComponentOrPanic<T>(FindGameObjectWithTagOrPanic(tag), command);
     }
 
-    public static T GetComponentInGameObjectFoundWithTag<T>(string tag)
-    {
-        GameObject go = GameObject.FindGameObjectWithTag(tag);
-
-        if (go == null)
-            return default(T);
-
-        return go.GetComponent<T>();
+    public static T GetComponentInGameObjectFoundWithTag<T>(string tag, GetComponentPostCommand command = GetComponentPostCommand.None)
+    {       
+        return GetComponent<T>(GameObject.FindGameObjectWithTag(tag), command);
     }
 
-    public static T GetComponentOrPanic<T>(GameObject go)
+    public static T GetComponentOrPanic<T>(GameObject go, GetComponentPostCommand command = GetComponentPostCommand.None)
     {
         if (go == null)
             throw new ComponentNotFoundException("GameObject == null");
 
-        T component = go.GetComponent<T>();
+        T component = GetComponent<T>(go, command);
 
         if (component == null)
             throw new ComponentNotFoundException("Component: " + typeof(T).Name + " not found in GameObject: " + go);
+
+        return component;
+    }
+
+    public static T GetComponent<T>(GameObject go, GetComponentPostCommand command = GetComponentPostCommand.None)
+    {
+        if (go == null)
+            return default(T);
+
+        T component = go.GetComponent<T>();
+
+        if (component != null && command == GetComponentPostCommand.DestroyGameObject)
+            UnityEngine.Object.Destroy(go);
 
         return component;
     }
@@ -89,20 +108,30 @@ public static class CommonUtils
         /*}*/
     }
 
-    internal static bool CompareTags(GameObject gameObject, string dESTRUCTIBLE_TAG, object eNEMY_TAG)
+    public static bool CompareTags(GameObject gameObject, CompareTagsMode mode, params string[] tags)
     {
-        throw new NotImplementedException();
-    }
 
-    public static bool CompareTags(GameObject gameObject, params string[] tags)
-    {
+        bool match = false;
+
         foreach (string tag in tags)
         {
-            if (gameObject.CompareTag(tag))
-                return true;
+            match = gameObject.CompareTag(tag);
+
+            switch (mode)
+            {
+                case CompareTagsMode.MatchOneTag:
+                    if (match) return true;
+                    break;
+                case CompareTagsMode.MatchAllTags:
+                    if (!match) return false;
+                    break;
+                default:
+                    throw new System.Exception("CompareTagsMode: " + mode + " unknown");
+            }
+
         }
 
-        return false;
+        return match;
     }
 
 }

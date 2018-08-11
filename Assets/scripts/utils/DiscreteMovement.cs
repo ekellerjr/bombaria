@@ -1,10 +1,12 @@
 ﻿using System;
 using UnityEngine;
+using Unity.Mathematics;
 
 public static class DiscreteMovement
 {
     public enum MovingDirection
     {
+        none,
         forward,
         forward_right,
         right,
@@ -15,7 +17,7 @@ public static class DiscreteMovement
         forward_left,
     }
 
-    public static readonly Vector3 rot_forward = new Vector3(0, 0, 0);
+    public static readonly Vector3 rot_forward = Vector3.zero;
     public static readonly Vector3 rot_forward_right = new Vector3(0, 45, 0);
     public static readonly Vector3 rot_right = new Vector3(0, 90, 0);
     public static readonly Vector3 rot_backward_right = new Vector3(0, 135, 0);
@@ -36,6 +38,8 @@ public static class DiscreteMovement
     {
         switch (direction)
         {
+            case MovingDirection.none:              // no movement
+                return Vector3.zero;
             case MovingDirection.forward:           // forward
                 return Vector3.forward;
             case MovingDirection.forward_right:     // forward right
@@ -61,6 +65,8 @@ public static class DiscreteMovement
     {
         switch (direction)
         {
+            case MovingDirection.none:              // no rotation
+                return Vector3.zero;
             case MovingDirection.forward:           // forward
                 return rot_forward;
             case MovingDirection.forward_right:     // forward right
@@ -82,64 +88,90 @@ public static class DiscreteMovement
         }
     }
 
-    public static void RotateXZDiscrete45(Rigidbody rigidbody, Vector3 movement)
+    public static DiscreteMovement.MovingDirection GetMovingDirection(float h, float v)
     {
-        DiscreteMovement.MovingDirection direction;
-
         // no direction
-        if (movement.x == 0 && movement.z == 0)
+        if (h == 0 && v == 0)
         {
-            return;
+            return MovingDirection.none;
         }
         // forward
-        if (movement.x == 0 && movement.z > 0)
+        if (h == 0 && v > 0)
         {
-            direction = DiscreteMovement.MovingDirection.forward;
+            return DiscreteMovement.MovingDirection.forward;
         }
         // forward right
-        else if (movement.x > 0 && movement.z > 0)
+        else if (h > 0 && v > 0)
         {
-            direction = DiscreteMovement.MovingDirection.forward_right;
+            return DiscreteMovement.MovingDirection.forward_right;
         }
         // right
-        else if (movement.x > 0 && movement.z == 0)
+        else if (h > 0 && v == 0)
         {
-            direction = DiscreteMovement.MovingDirection.right;
+            return DiscreteMovement.MovingDirection.right;
         }
         // backward right
-        else if (movement.x > 0 && movement.z < 0)
+        else if (h > 0 && v < 0)
         {
-            direction = DiscreteMovement.MovingDirection.backward_right;
+            return DiscreteMovement.MovingDirection.backward_right;
         }
         // backward
-        else if (movement.x == 0 && movement.z < 0)
+        else if (h == 0 && v < 0)
         {
-            direction = DiscreteMovement.MovingDirection.backward;
+            return DiscreteMovement.MovingDirection.backward;
         }
         // backward left
-        else if (movement.x < 0 && movement.z < 0)
+        else if (h < 0 && v < 0)
         {
-            direction = DiscreteMovement.MovingDirection.backward_left;
+            return DiscreteMovement.MovingDirection.backward_left;
         }
         // left
-        else if (movement.x < 0 && movement.z == 0)
+        else if (h < 0 && v == 0)
         {
-            direction = DiscreteMovement.MovingDirection.left;
+            return DiscreteMovement.MovingDirection.left;
         }
         // forward left
-        else if (movement.x < 0 && movement.z > 0)
+        else if (h < 0 && v > 0)
         {
-            direction = DiscreteMovement.MovingDirection.forward_left;
+            return DiscreteMovement.MovingDirection.forward_left;
         }
         else
-            return;
+            return MovingDirection.none;
+    }
 
-        RotateDiscrete(rigidbody, direction);
+    public static quaternion GetRotationXZDiscrete45(float3 movement)
+    {
+        return GetRotationXZDiscrete45(GetMovingDirection(movement));
+    }
+
+    public static float3 GetHeadingXZDiscrete45(float3 movement)
+    {
+        return DiscreteMovement.GetRotationVector(GetMovingDirection(movement));
+    }
+
+    public static quaternion GetRotationXZDiscrete45(MovingDirection direction)
+    {
+        return Quaternion.Euler(DiscreteMovement.GetRotationVector(direction));
+    }
+
+    public static DiscreteMovement.MovingDirection GetMovingDirection(float3 movement)
+    {
+        return GetMovingDirection(movement.x, movement.z);
+    }
+
+    public static DiscreteMovement.MovingDirection GetMovingDirection(Vector3 movement)
+    {
+        return GetMovingDirection(movement.x, movement.z);
+    }
+
+    public static void RotateXZDiscrete45(Rigidbody rigidbody, Vector3 movement)
+    {
+        RotateDiscrete(rigidbody, GetMovingDirection(movement));
     }
 
     public static void RotateDiscrete(Rigidbody rigidbody, DiscreteMovement.MovingDirection direction)
     {
-        rigidbody.MoveRotation(Quaternion.Euler(DiscreteMovement.GetRotationVector(direction)));
+        rigidbody.MoveRotation(GetRotationXZDiscrete45(direction));
     }
 
     public static void MoveDiscrete(Rigidbody rigidbody, DiscreteMovement.MovingDirection direction, float speed)

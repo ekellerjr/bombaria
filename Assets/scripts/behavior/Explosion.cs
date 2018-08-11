@@ -81,10 +81,9 @@ public class Explosion : MonoBehaviour {
 
         foreach (Collider c in hitColliders)
         {
-            if (CommonUtils.CompareTags(
-                c.gameObject, 
-                CommonTags.DESTRUCTIBLE,
-                CommonTags.ENEMY))
+            if (CommonUtils.CompareTags(c.gameObject, CommonUtils.CompareTagsMode.MatchOneTag,
+                BombariaTags.DESTRUCTIBLE,
+                BombariaTags.ENEMY))
             {
                 Destroy(c.gameObject);
             }
